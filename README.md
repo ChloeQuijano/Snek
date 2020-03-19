@@ -24,10 +24,10 @@ Possible algorithms we can implement to the code:
 
 3. Looked through given API in C and Python
 The algorithm we implement must change the variables "axis" and "direction"
-Input:
-> current position of the snake - (0,0) initially at the start
-> position of the moogle
-During:
-> decide path of the snake to get the moogle
-Output:
-> axis and direction to follow the path the algorithm has decided on
+- Input:
+  - current position of the snake - (0,0) initially at the start
+  - position of the moogle
+- During:
+  - decide path of the snake to get the moogle
+- Output:
+  - axis and direction to follow the path the algorithm has decided on
