@@ -7,6 +7,7 @@ Year 1 Winter Sem
 ## Process & Thinking
 1. Thought about the language we wanted to use
 We were very familiar with Python and the different data structures there are in it so we decided to work on Python
+
 2. First thought about the possible algorithms we can implement to find a path in a graph
 Possible algorithms we can implement to the code:
 - Shortest Path Breadth First Search (BFS) - Dijkstra can also be implemented
@@ -20,3 +21,13 @@ Possible algorithms we can implement to the code:
 > Also the risk of trapping into themselves once they get the moogle
 - Hamiltonian Cycle
 > Similar problems with Longest Path BUT in the form of a cycle, so could reduce the risk of trapping into themselves because it visits every possible node and thinks of a path that is long and comes back to the original position without bumping into themselves
+
+3. Looked through given API in C and Python
+The algorithm we implement must change the variables "axis" and "direction"
+Input:
+> current position of the snake - (0,0) initially at the start
+> position of the moogle
+During:
+> decide path of the snake to get the moogle
+Output:
+> axis and direction to follow the path the algorithm has decided on
