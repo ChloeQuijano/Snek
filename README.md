@@ -1,9 +1,9 @@
 # ESC190 Snek Project
-Code for the ESC190 Snek Project with Sofi
+Code for the ESC190 Snek Project with Sofi\
 Year 1 Winter Sem
 
 ## Purpose of the Project
-Adjust the API in the game Snek so that you can maximize the amount of points obtained
+Adjust the API in the game Snek so that you can maximize the amount of points obtained\
 Goals:
 - Add data structure such that it inputs a sequence of moves in the data structure of our choice
 - Implement algorithm to maximize the amount of points before game ends using default board size
