@@ -48,11 +48,28 @@ Snek* init_snek(int a, int b){
 	return snek; 
 }
 
+// ALGORITHM
+
+
+
+char isSafe(GameBoard* board, Point path[], int position, GameBoard* checked, int y_coord, int x_coord) {
+	printf("checking if safe called\n");
+    if (board->occupancy[y_coord][x_coord] == 1 || checked->occupancy[y_coord][x_coord] == 1) {
+        return 0;
+    }
+	for (int i = 0; i < position; i++ ) {
+		if (path[i].y_coord == y_coord && path[i].x_coord == x_coord) {
+			return 0;
+		}
+	}
+    return 1;
+}
+
 // check if the snake hits the edge of the board
 int hits_edge(int axis, int direction, GameBoard* gameBoard){
 	// Replaced gameBoard->snek->head[y] with gameBoard->snek->head->coord[y]
 	if (((axis == AXIS_Y) && ((direction == UP && gameBoard->snek->head->coord[y] + UP < 0) || (direction == DOWN && gameBoard->snek->head->coord[y] + DOWN > BOARD_SIZE - 1)))
-	   || (axis = AXIS_X && ((direction == LEFT && gameBoard->snek->head->coord[x] + LEFT < 0) || (direction == RIGHT && gameBoard->snek->head->coord[x] + RIGHT > BOARD_SIZE-1))))
+	   || (axis == AXIS_X && ((direction == LEFT && gameBoard->snek->head->coord[x] + LEFT < 0) || (direction == RIGHT && gameBoard->snek->head->coord[x] + RIGHT > BOARD_SIZE-1))))
 	{ // return if the coord of the head hits the edge
 		return 1;
 	} else { // if it doesnt hit the edge
@@ -261,3 +278,9 @@ void end_game(GameBoard **board){
 	free((*board)->snek);
 	free(*board);
 }
+
+
+
+
+
+

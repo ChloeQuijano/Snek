@@ -1,24 +1,48 @@
 #include "snek_api.h"
 #include <unistd.h>
+#include <math.h>
+
 
 void play_game() {
 	printf("starting\n");
 
 	//board initialized, struct has pointer to snek
 	GameBoard* board = init_board(); // calls an empty board
-	show_board(board); // builds the board into the terminal
 
-	// CHANGING THESE - THESE ARE JUSt INITIALS
-	int axis = AXIS_INIT;
-	int direction = DIR_INIT;
-	
+	// start the adjacency matrix 
+	int graph[n][n] = make_matrix(board);
+
+	// start algorithm
+	int *path = hamCycle(graph, board);
+
+	// CHANGING THESE - THESE ARE JUST INITIALS
+	int axis = AXIS_INIT; // AXIS_Y or AXIS_X
+	int direction = DIR_INIT; // UP, DOWN, LEFT or RIGHT
+
+	// convert path into coordinate points
+	// y coord = floor(i / BOARDSIZE) - 1
+	// x coord = i % BOARDSIZE - 1
+	int coord_x[BOARD_SIZE*BOARD_SIZE];
+	int coord_y[BOARD_SIZE*BOARD_SIZE];
+	int size = sizeof(path)/sizeof(path[0]);
+	for (int i = 0; i <= size; i++) {
+		coord_x[i] = path[i] % BOARD_SIZE - 1;
+		coord_y[i] = floor(path[i] / BOARD_SIZE) - 1;
+	}
+
 	int play_on = 1; // if true it will continue moving
-	int coord[2];
+	int count = 1;
 	
 	while (play_on){
 
+
+		board->snek->head->coord[x] = coord_x[count];
+		board->snek->head->coord[y] = coord_y[count];
+
 		coord[x] = board->snek->head->coord[x]; // get new x cord
 		coord[y] = board->snek->head->coord[y]; // get new y cord
+
+		count++;
 
 		// will return true when the input direction and axis is true
 		unsigned short go_x = (axis == AXIS_Y && direction == 1 && coord[y] == (BOARD_SIZE - 1)) || (axis == AXIS_Y && direction == -1 && coord[y] == 0);

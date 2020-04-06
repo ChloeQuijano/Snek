@@ -52,9 +52,19 @@ typedef struct GameBoard {
 	struct Snek* snek;
 } GameBoard;
 
+// added
+typedef struct Point{
+    int x_coord;
+    int y_coord;
+} Point;
+
 
 GameBoard *init_board();
 Snek *init_snek(int a, int b);
+int make_matrix();
+int hamCycle(int graph[n][n], GameBoard* board);
+int hamCycleUtil(int graph[n][n], int path[], int pos);
+int isSafe(int v, int graph[n][n], int path[], int pos);
 int hits_edge(int axis, int direction,  GameBoard *gameBoard);
 int hits_self(int axis, int direction,  GameBoard *gameBoard);
 int is_failure_state(int axis, int direction,  GameBoard *gameBoard);
