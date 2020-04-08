@@ -23,14 +23,14 @@ void play_game() {
 	
 	int play_on = 1;
 	int coord[2];
-	//int count = 0;
+	int count = 0;
 	
 	while (play_on){
 		// axis = AXIS_Y or axis_X
 		// direction = UP, DOWN, LEFT, RIGHT
-		//if (count > 0) {
-			//axis = axis_list[count-1];
-			//direction = dir_list[count-1];
+		if (count > 0) {
+			axis = axis_list[count-1];
+			direction = dir_list[count-1];
 		}
 
 		coord[x] = board->snek->head->coord[x];
@@ -55,7 +55,7 @@ void play_game() {
 				direction = UP;
 			}
 		}
-		//count++;
+		count++;
 		show_board(board);
 		play_on = advance_frame(axis, direction, board);
 
@@ -76,6 +76,7 @@ void play_game() {
 				printf("DOWN");
 			}
 		} printf("\n");
+		
 		if (MOOGLE_FLAG != 0) {
 			call_algorithm(board);
 		}
@@ -90,6 +91,7 @@ void play_game() {
 void call_algorithm(GameBoard *board) {
 	// start algorithm
 	make_matrix(board); // get adjacency matrix
+	moogle_location(board);
 	target = (moogle_y*BOARD_SIZE) + (moogle_x+1);
 	start = (board->snek->head->coord[y] * BOARD_SIZE) + (board->snek->head->coord[x]+1);
 	dijkstra(start, target); // get path
