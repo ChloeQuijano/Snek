@@ -12,25 +12,23 @@ int TIME_OUT = ((BOARD_SIZE * 4) - 4) * CYCLE_ALLOWANCE;
 
 GameBoard* init_board(){
 	srand(time(0));
-	GameBoard* gameBoard = (GameBoard*)(malloc(sizeof(GameBoard))); // board size 10x10 arrays
+	GameBoard* gameBoard = (GameBoard*)(malloc(sizeof(GameBoard)));
 
-	// set every cell as empty on the game board
 	for (int i = 0; i < BOARD_SIZE; i++){
 		for (int j = 0; j < BOARD_SIZE; j++){
 			gameBoard->cell_value[i][j] = 0;
 			gameBoard->occupancy[i][j] = 0;
 		}
 	}
-	gameBoard->occupancy[0][0] = 1; //snake initialized at the start (0,0)
-	gameBoard->snek = init_snek(0, 0); // // add the snake body on the board
-	return gameBoard; // return final gameboard with the snake on it
+	gameBoard->occupancy[0][0] = 1; //snake initialized
+	gameBoard->snek = init_snek(0, 0);
+	return gameBoard;
 }
 
 Snek* init_snek(int a, int b){
-	Snek* snek = (Snek *)(malloc(sizeof(Snek))); // set structure for snake
+	Snek* snek = (Snek *)(malloc(sizeof(Snek)));
 
-	snek->head = (SnekBlock *)malloc(sizeof(SnekBlock)); // set structure for head
-	// coordinates for the head of the snake
+	snek->head = (SnekBlock *)malloc(sizeof(SnekBlock));
 	snek->head->coord[x] = a;
 	snek->head->coord[y] = b;
 
@@ -38,71 +36,53 @@ Snek* init_snek(int a, int b){
 	snek->tail->coord[x] = a;
 	snek->tail->coord[y] = b;
 
-	// add next to the length between the tail
-	snek->tail->next = NULL; // adding nothing after the tail
-	snek->head->next = snek->tail; // adding to the head through next
+	snek->tail->next = NULL;
+	snek->head->next = snek->tail;
 	
-	// initiate length of the snake
 	snek->length = 1;
 
-	return snek; 
+	return snek;
 }
-
-// ALGORITHM
-
-
-
-char isSafe(GameBoard* board, Point path[], int position, GameBoard* checked, int y_coord, int x_coord) {
-	printf("checking if safe called\n");
-    if (board->occupancy[y_coord][x_coord] == 1 || checked->occupancy[y_coord][x_coord] == 1) {
-        return 0;
-    }
-	for (int i = 0; i < position; i++ ) {
-		if (path[i].y_coord == y_coord && path[i].x_coord == x_coord) {
-			return 0;
-		}
-	}
-    return 1;
-}
-
-// check if the snake hits the edge of the board
+//updated
 int hits_edge(int axis, int direction, GameBoard* gameBoard){
-	// Replaced gameBoard->snek->head[y] with gameBoard->snek->head->coord[y]
 	if (((axis == AXIS_Y) && ((direction == UP && gameBoard->snek->head->coord[y] + UP < 0) || (direction == DOWN && gameBoard->snek->head->coord[y] + DOWN > BOARD_SIZE - 1)))
 	   || (axis == AXIS_X && ((direction == LEFT && gameBoard->snek->head->coord[x] + LEFT < 0) || (direction == RIGHT && gameBoard->snek->head->coord[x] + RIGHT > BOARD_SIZE-1))))
-	{ // return if the coord of the head hits the edge
+	{
 		return 1;
-	} else { // if it doesnt hit the edge
+	} else {
 		return 0;
 	}
 
 }
 
- // check if the snake hits itself
+//updated
 int hits_self(int axis, int direction, GameBoard *gameBoard){
 	int new_x, new_y;
 	if (axis == AXIS_X){
-		new_x = gameBoard->snek->head->coord[x] + direction; // projected coord of direction + existing
+		new_x = gameBoard->snek->head->coord[x] + direction;
 		new_y = gameBoard->snek->head->coord[y];
 	} else if (axis == AXIS_Y){
 		new_x = gameBoard->snek->head->coord[x];
 		new_y = gameBoard->snek->head->coord[y] + direction;
 	}
-	return gameBoard->occupancy[new_y][new_x]; //1 if occupied
+	if ((gameBoard->snek->length != 1) && 
+		(new_y == gameBoard->snek->tail->coord[y] && new_x == gameBoard->snek->tail->coord[x]))
+	{
+		return 0; //not hit self, this is the tail which will shortly be moving out of the way
+	} else {
+		return gameBoard->occupancy[new_y][new_x]; //1 if occupied
+	}
 }
 
-// if moogle still exists 
 int time_out(){
 	return (MOOGLE_FLAG == 1 && CURR_FRAME > TIME_OUT);
 
 }
 
-// all the cases for the game to fail 
 int is_failure_state(int axis, int direction, GameBoard *gameBoard){
 	return (hits_self(axis, direction, gameBoard) || hits_edge(axis, direction, gameBoard) || time_out());
 }
 
-// adds a moogle on the board if there is no moogle anymore
 void populate_moogles(GameBoard *gameBoard){
 	if (MOOGLE_FLAG == 0){
 		int r1 = rand() % BOARD_SIZE;
@@ -119,29 +99,22 @@ void populate_moogles(GameBoard *gameBoard){
 	}
 }
 
-// when the snake lands on the moogle based on the head of the snake
 void eat_moogle(GameBoard* gameBoard, int head_x, int head_y) {
-	SCORE = SCORE + gameBoard->cell_value[head_y][head_x]; // update the score based on the value on the board
-	gameBoard->cell_value[head_y][head_x] = 0; // update the place the moogle is at by 0
+	SCORE = SCORE + gameBoard->cell_value[head_y][head_x];
+	gameBoard->cell_value[head_y][head_x] = 0;
 
-	gameBoard->snek->length ++; // increase length by 1
+	gameBoard->snek->length ++;
 	MOOGLES_EATEN ++;
 	MOOGLE_FLAG = 0;
 	CURR_FRAME = 0;
 }
 
-// the advance frame of the input direction by the user 
 int advance_frame(int axis, int direction, GameBoard *gameBoard){
-	// when the board fails based on the direction and existing gameboard
 	if (is_failure_state(axis, direction, gameBoard)){
 		return 0;
-
-	// when it doesn't fail so it continues to move into the next frame
 	} else {
-
 		// update the occupancy grid and the snake coordinates
 		int head_x, head_y;
-
 		// figure out where the head should now be
 		if (axis == AXIS_X) {
 			head_x = gameBoard->snek->head->coord[x] + direction;
@@ -249,11 +222,9 @@ void show_board(GameBoard* gameBoard) {
 	fflush(stdout);
 }
 
-
 int get_score() {
 	return SCORE;
 }
-
 
 void end_game(GameBoard **board){
 	//fprintf(stdout, "\033[2J");
@@ -278,9 +249,3 @@ void end_game(GameBoard **board){
 	free((*board)->snek);
 	free(*board);
 }
-
-
-
-
-
-

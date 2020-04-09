@@ -2,6 +2,9 @@
 #include <unistd.h>
 
 #define INFINITY 9999
+#define initial 1
+#define waiting 2
+#define visited_def 3
 
 int NODES = BOARD_SIZE*BOARD_SIZE;
 int MATRIX[BOARD_SIZE*BOARD_SIZE][BOARD_SIZE*BOARD_SIZE];
@@ -9,6 +12,11 @@ int PATH[BOARD_SIZE*BOARD_SIZE];
 int moogle_x, moogle_y, target, start;
 int axis_list[BOARD_SIZE*BOARD_SIZE];
 int dir_list[BOARD_SIZE*BOARD_SIZE];
+int queue[NODES];
+int front = -1;
+int rear = -1;
+int state[NODES];
+
 
 void play_game() {
 	printf("starting\n");
@@ -16,6 +24,8 @@ void play_game() {
 	GameBoard* board = init_board();
 	show_board(board);
 
+	FILE *file;
+	file = fopen("snake_result.txt", "w+");
 
 	// starts at (0,0)
 	int axis = AXIS_INIT; // y axis first
@@ -85,6 +95,8 @@ void play_game() {
 		// check if the end of path and if so, you call the algorithm again and reset count
 		usleep(500000);
 	}
+	fprintf(file, "$d\n", SCORE);
+	fclose(file);
 	end_game(&board);
 }
 
@@ -94,7 +106,9 @@ void call_algorithm(GameBoard *board) {
 	moogle_location(board);
 	target = (moogle_y*BOARD_SIZE) + (moogle_x+1);
 	start = (board->snek->head->coord[y] * BOARD_SIZE) + (board->snek->head->coord[x]+1);
-	dijkstra(start, target); // get path
+	hamCycle(board); // get path using Hamiltonian path
+	dijkstra(start, target); // get path usin dijkstra's algorithm
+	BF_traversal(); // get path using BFS 
 
 	// change path to directions
 	for (int i = 0; i < NODES-2; i++) {
@@ -162,6 +176,64 @@ void moogle_location(GameBoard *board) {
 	}
 }
 
+// ==================== HAMILTONIAN CYCLE ALGORITHM ========================= //
+
+int hamCycle(GameBoard* board) {
+    int *path = new int[n];
+    for (int i = 0; i < n; i++) {
+        path[i] = -1;
+    }
+
+    // make point out of the current spot of the snake
+    int start = (board->snek->head->coord[y] + 1) * (board->snek->head->coord[x] + 1);
+
+    path[0] = start;
+    if (hamCycleUtil(path, 1) == 0) {
+        // no solution
+        return 0;
+    }
+    return path;
+}
+
+int hamCycleUtil(int path[], int pos) {
+    if (pos == n) {
+        // check if already included
+        if ( MATRIX[path[pos-1]][path[0]] == 1) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    for (int v = 1; v < n; v++) {
+        if (isSafe(v, path, pos)) {
+            path[pos] = v;
+
+            // construct rest of path
+            if (hamCycleUtil (path, pos+1) == 1) {
+                return 1;
+            }
+
+            // if adding solution doesn't lead to a solution
+            path[pos] = -1;
+        }
+    }
+}
+
+int isSafe(int v, int graph[n][n], int path[], int pos) {
+    if (MATRIX[path[pos-1]][n] == 0) {
+        return 0;
+    }
+    for (int i = 0; i < pos; i++) {
+        if (path[i] == v) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// ==================== DIJKSTRA's ALGORITHM ========================= //
+
 void dijkstra(int start, int target) {
 	int cost[NODES][NODES], distance[NODES], pred[NODES];
 	int visited[NODES], count, min_distance, nextnode = 0;
@@ -178,7 +250,7 @@ void dijkstra(int start, int target) {
 		}
 	}
 
-	// nitialize pred to start, distances and visited as empty
+	// initialize pred to start, distances and visited as empty
 	for (int i = 0; i < NODES; i++) {
 		distance[i] = cost[start][i];
 		pred[i] = start;
@@ -232,6 +304,138 @@ void dijkstra(int start, int target) {
 	}
 }
 
+// ==================== BREADTH FIRST SEARCH ALGORITHM ========================= //
+
+void BF_traversal() {
+	int v;
+	
+	for (v = 0; v < NODES; v++) {
+		state[v]= INFINITY;
+	}
+
+	v = start;
+	BFS(v);
+}
+
+void BFS(int v) {
+	int i;
+
+	insert_queue(v);
+	state[v] = waiting;
+
+	// checks if previously made queue is empty, while false it will remove it
+	while (!isEmpty_queue()) {
+		v = delete_queue();
+		state[v] = visited_def;
+	}
+
+	// checks if there is an available node to enter
+	for (i = 0; i < NODES; i++) {
+		// looks if the node has connection and is marked as distance of INFINITY
+		if (MATRIX[v][i] == 1 && state[i] == INFINITY) {
+			// insert this free node
+			insert_queue(i);
+			state[i] = waiting;
+		}
+	}
+}
+
+void insert_queue(int vertex) {
+	if (rear == NODES-1) {
+		printf("queue overflown");
+	} else {
+		if (front == -1) {
+			front = 0;
+		}
+		rear = rear + 1;
+		queue[rear] = vertex;
+	}
+}
+
+int isEmpty_queue() {
+	if (front == -1 || front > rear) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int delete_queue() {
+	int delete_item;
+	if (front = -1 || front > rear) {
+		printf("queue overflown");
+	}
+	delete_item = queue[front];
+	front = front+1;
+	return delete_item;
+}
+
+// ==================== LONGEST PATH ALGORITHM ========================= //
+
+int longest_path(GameBoard* board) {
+   // longest path from the start to the moogle
+   int distance[NODES];
+   for (int i = 0; i < NODES; i++) {
+	   distance[i] = INFINITY;
+   }
+
+	// initialize all starting 
+	int queue[NODES];
+   	queue[0] = start;
+   	distance[0] = 0;
+
+	// checks if there is an available node to enter
+	for (i = 0; i < NODES; i++) {
+		// looks if the node has connection and is marked as distance of INFINITY
+		if (MATRIX[v][i] == 1 && distance[i] == INFINITY) {
+			// insert this free node
+			insert_queue(i);
+			distance[i] = distance[0] + 1;
+		}
+	}
+
+	int maxDistance = 0;
+	// get farthest node distance to its target
+	for (int i = 0; i < NODES; i++) {
+		if (distance[i] > maxDistance) {
+			maxDistance = distance[i]
+		}
+		if (i == target) {
+			PATH[NODES] = distance[NODES];
+			break;
+		}
+	}
+}
+
+void insert_queue(int vertex) {
+	if (rear == NODES-1) {
+		printf("queue overflown");
+	} else {
+		if (front == -1) {
+			front = 0;
+		}
+		rear = rear + 1;
+		queue[rear] = vertex;
+	}
+}
+
+int isEmpty_queue() {
+	if (front == -1 || front > rear) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int delete_queue() {
+	int delete_item;
+	if (front = -1 || front > rear) {
+		printf("queue overflown");
+	}
+	delete_item = queue[front];
+	front = front+1;
+	return delete_item;
+}
 
 int main(){
 	play_game();
