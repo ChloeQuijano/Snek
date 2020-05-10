@@ -38,3 +38,18 @@ The algorithm we implement must change the variables "axis" and "direction"
   - decide path of the snake to get the moogle
 - Output:
   - axis and direction to follow the path the algorithm has decided on
+  
+  ## Final Thoughts
+- Was able to try multiple data structures and algorithms and code them for the API
+- Although we could not get it to work on time for the deadline, we were able to understand a lot about each algorithm like: time complexitities, space complexitity, advantages vs disadvantages for each
+- came to a conclusion that the best algorithm to use based on the constraints set in the project was: Dijkstra's Algorithm
+Why? 
+Since time was a constraint to consider, using Longest Path or Hamiltonian would not work because time would run out before we could reach the target. So we settled on a path finding algorithm that would get to the target in time
+- Our snake would likely trap itself to end the game since it only tracks finding the shortest path to the target
+
+## Next Steps
+To further improve, we would:
+- Fix it to get the algorithm to work with the given API
+- Code the whole snake game from scratch so we can learn the whole functionality of the game rather than spending time to understand an already given API
+- Try a mix of different algorithms like a hamiltonian path finding algorithm that doesn't go through the WHOLE board so that it can still keep a cyclic path to reduce the risk of trapping itself while still eating it's target in the process
+Overall, we really enjoyed this project and it taught us a lot about how to code each of the algorithms listed above
