@@ -22,8 +22,8 @@ SNAKE API
 #define LEFT -1
 #define RIGHT 1
 
-#define AXIS_INIT AXIS_Y
-#define DIR_INIT DOWN
+#define AXIS_INIT AXIS_Y;
+#define DIR_INIT DOWN;
 
 #define x 0
 #define y 1
@@ -52,23 +52,14 @@ typedef struct GameBoard {
 	struct Snek* snek;
 } GameBoard;
 
-// added
-typedef struct Point{
-    int x_coord;
-    int y_coord;
-} Point;
-
 
 GameBoard *init_board();
 Snek *init_snek(int a, int b);
-int make_matrix();
-int hamCycle(int graph[n][n], GameBoard* board);
-int hamCycleUtil(int graph[n][n], int path[], int pos);
-int isSafe(int v, int graph[n][n], int path[], int pos);
 int hits_edge(int axis, int direction,  GameBoard *gameBoard);
 int hits_self(int axis, int direction,  GameBoard *gameBoard);
 int is_failure_state(int axis, int direction,  GameBoard *gameBoard);
 int advance_frame(int axis, int direction,  GameBoard *gameBoard);
+void call_algorithm(GameBoard *board);
 void end_game(GameBoard **board);
 void show_board(GameBoard* gameBoard);
 int get_score();
