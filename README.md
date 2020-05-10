@@ -2,6 +2,13 @@
 Code for the ESC190 Snek Project with Sofi\
 Year 1 Winter Sem
 
+## Table of contents
+* [Purpose](#Purpose-of-the-Project)
+* [Process](#Process-and-Thinking)
+* [Technologies](#technologies)
+* [Final Thoughts](#Final-Thoughts)
+* [Next Steps](#Next-Steps)
+
 ## Purpose of the Project
 Adjust the API in the game Snek so that you can maximize the amount of points obtained\
 Goals:
@@ -11,7 +18,7 @@ Goals:
   - What is the expected score for our algorithm?
   - What is the minimum score our algorithm is guaranteed to accomplish?
 
-## Process & Thinking
+## Process and Thinking
 1. Thought about the language we wanted to use
 We were very familiar with Python and the different data structures there are in it so we decided to work on Python
 
@@ -39,7 +46,12 @@ The algorithm we implement must change the variables "axis" and "direction"
 - Output:
   - axis and direction to follow the path the algorithm has decided on
   
-  ## Final Thoughts
+## Technologies
+- C
+- IDE: VS Code and Atom
+- Python 3.7
+  
+## Final Thoughts
 - Was able to try multiple data structures and algorithms and code them for the API
 - Although we could not get it to work on time for the deadline, we were able to understand a lot about each algorithm like: time complexitities, space complexitity, advantages vs disadvantages for each
 - came to a conclusion that the best algorithm to use based on the constraints set in the project was: Dijkstra's Algorithm
